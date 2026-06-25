@@ -65,10 +65,12 @@ def check_shop():
     else:
         print("Shop: empty (normal).")
 
-
 def check_bowler_hat():
     print("Checking Bowler Hat...")
     soup = fetch("https://www.yorkghostmerchants.com/bowlerhat")
+    text = soup.get_text()
+    print(f"Signal found: {'No results found' in text}")
+    print(f"Page snippet: {text[1000:1500]}")
 
     if BOWLER_CLOSED_SIGNAL not in soup.get_text():
         send_email(
