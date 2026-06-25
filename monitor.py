@@ -1,11 +1,9 @@
 import os
-import smtplib
 import requests
-from email.message import EmailMessage
 from bs4 import BeautifulSoup
 
-EMAIL_ADDRESS     = os.environ.get("EMAIL_ADDRESS", "")
-EMAIL_APP_PASSWORD = os.environ.get("EMAIL_APP_PASSWORD", "")
+RESEND_API_KEY   = os.environ.get("RESEND_API_KEY", "")
+RECIPIENT_EMAIL  = os.environ.get("RECIPIENT_EMAIL", "")
 
 HEADERS = {
     "User-Agent": (
@@ -27,20 +25,29 @@ def fetch(url):
 
 def send_email(subject, body):
     print(f"Sending email: {subject}")
-    if not EMAIL_ADDRESS or not EMAIL_APP_PASSWORD:
-        print("Email credentials not set — skipping send.")
+    if not RESEND_API_KEY or not RECIPIENT_EMAIL:
+        print("Resend credentials not set — skipping send.")
         return
 
-    msg = EmailMessage()
-    msg["Subject"] = subject
-    msg["From"]    = EMAIL_ADDRESS
-    msg["To"]      = EMAIL_ADDRESS  # sends to yourself
-    msg.set_content(body)
+    response = requests.post(
+        "https://api.resend.com/emails",
+        headers={
+            "Authorization": f"Bearer {RESEND_API_KEY}",
+            "Content-Type": "application/json",
+        },
+        json={
+            "from": "YGM Monitor <onboarding@resend.dev>",
+            "to": [RECIPIENT_EMAIL],
+            "subject": subject,
+            "text": body,
+        },
+        timeout=10,
+    )
 
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
-        smtp.login(EMAIL_ADDRESS, EMAIL_APP_PASSWORD)
-        smtp.send_message(msg)
-    print("Email sent.")
+    if response.status_code == 200:
+        print("Email sent.")
+    else:
+        print(f"Email failed: {response.status_code} {response.text}")
 
 
 def check_shop():
