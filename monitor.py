@@ -70,7 +70,7 @@ def check_bowler_hat():
     print("Checking Bowler Hat...")
     soup = fetch("https://www.yorkghostmerchants.com/bowlerhat")
 
-    if BOWLER_CLOSED_SIGNAL not in soup.get_text().lower():
+    if BOWLER_CLOSED_SIGNAL not in soup.get_text():
         send_email(
             subject="YGM: Bowler Hat has changed!",
             body=(
