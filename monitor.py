@@ -14,7 +14,7 @@ HEADERS = {
 }
 
 SHOP_EMPTY_SIGNAL    = "No results found"
-BOWLER_CLOSED_SIGNAL = "entry period has now ended"
+BOWLER_CLOSED_SIGNAL = "No results found"
 
 
 def fetch(url):
